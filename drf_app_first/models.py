@@ -46,7 +46,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)   
     status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-    product = models.ManyToManyField(Product, through="OrderItem" related_name='orders')
+    product = models.ManyToManyField(Product, through="OrderItem", related_name='orders')
 
     def __str__(self):
         return f"Order {self.order_id} by {self.user.username}"
