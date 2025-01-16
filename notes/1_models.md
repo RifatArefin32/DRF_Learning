@@ -199,3 +199,39 @@ class OrderItem(models.Model):
 
 ```
 Here, `OrderItem` is the `custom through model` that allows us to store additional data (quantity) about the relationship between Order and Product. The `ManyToManyField` in Order uses `through='OrderItem'` to specify that the relationship between `Order` and `Product` should be managed through the `OrderItem` model, which contains the quantity of each product in the order. In this case, the automatic join table is replaced by the custom `OrderItem` table, which can store more detailed information.
+
+
+# How to Populate Dummy Data for Django Models using Custom Management Command?
+- Create a custom management command inside our app, create a `management/commands` directory.
+- Create a new Python file for our command, e.g., `populate_dummy_data.py`.
+```python
+# myapp/management/commands/populate_dummy_data.py
+from django.core.management.base import BaseCommand
+from myapp.models import User, Product, Order, OrderItem
+
+class Command(BaseCommand):
+    help = 'Populate the database with dummy data'
+
+    def handle(self, *args, **kwargs):
+        # Create Users
+        user = User.objects.create_user(username="john_doe", password="password123", email="john@example.com")
+        
+        # Create Products
+        product1 = Product.objects.create(name="Product 1", description="Description for Product 1", price=100.0, stock=10)
+        product2 = Product.objects.create(name="Product 2", description="Description for Product 2", price=50.0, stock=20)
+        product3 = Product.objects.create(name="Product 3", description="Description for Product 3", price=30.0, stock=5)
+        
+        # Create an Order
+        order = Order.objects.create(user=user, status=Order.StatusChoices.PENDING)
+        
+        # Create OrderItems
+        OrderItem.objects.create(order=order, product=product1, quantity=2)
+        OrderItem.objects.create(order=order, product=product2, quantity=1)
+        
+        self.stdout.write(self.style.SUCCESS('Successfully populated the database with dummy data'))
+
+```
+- After creating the custom command, run the command using:
+```bash
+python manage.py populate_dummy_data
+```
