@@ -4,7 +4,7 @@ from .models import Product, Order, OrderItem
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'stock', 'in_stock']
+        fields = ['name', 'description', 'price', 'stock', 'in_stock']
 
     def validate_price(self, value):
         if value <= 0:
