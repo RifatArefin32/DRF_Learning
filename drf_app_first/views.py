@@ -1,9 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import Max
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Product, Order
-from .serializers import ProductSerializer, OrderSerializer
+from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
 
 
 # Create your views here.
@@ -33,5 +34,20 @@ def product_details(request, pk):
 def order_list(request):
     orders = Order.objects.all()
     serializer = OrderSerializer(orders, many=True)
+
+    return Response(serializer.data)
+
+
+
+# get all product info
+@api_view(['GET'])
+def product_info(request):
+    products = Product.objects.all()
+    max_price = products.aggregate(max_price=Max('price'))['max_price']
+    serializer = PorductInfoSerializer({
+        'products': products,
+        'count': len(products),
+        'max_price': max_price
+    })
 
     return Response(serializer.data)
