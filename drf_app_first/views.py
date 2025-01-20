@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import Product, Order
 from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
 
@@ -92,3 +93,18 @@ def product_info(request):
     })
 
     return Response(serializer.data)
+
+
+
+# Class-based View to list all product info
+class ProductInfoAPIView(APIView):
+    def get(self, request):
+        products = Product.objects.all()
+        max_price = products.aggregate(max_price=Max('price'))['max_price']
+        serializer = PorductInfoSerializer({
+            'products': products,
+            'count': len(products),
+            'max_price': max_price
+        })
+
+        return Response(serializer.data)
