@@ -21,3 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('first/', include('drf_app_first.urls')),
 ]
+
+urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
