@@ -4,6 +4,10 @@ In Django, models can be related to one another in several ways, depending on th
 - Many-to-One, and 
 - Many-to-Many. 
 
+
+<br>
+
+
 # One-to-One Relationship
 In a one-to-one relationship, each instance of a model is related to exactly one instance of another model. This type of relationship is less common but useful when we want to ensure that one record is associated with a unique record in another model.
 
@@ -20,20 +24,36 @@ class UserProfile(models.Model):
         return f"Profile of {self.user.username}"
 
 ```
-Here, in our `UserProfile` model, we've created a `OneToOneField` that links the `UserProfile` model to the `User` model using the `user` field. The reverse relationship from the `User` model to the `UserProfile` model will automatically be created by Django, using the lowercase name of the related model i.e. `userprofile` in this case by default.
+Here, in our `UserProfile` model, we've created a `OneToOneField` that links the `UserProfile` model to the `User` model using the `user` field. 
 
-### Example
+## Accessing the `User` from a `UserProfile`
+
 ```python
-# Get a User instance
+user_profile = UserProfile.objects.get(id=1) 
+user = user_profile.user
+```
+
+## Accessing the `UserProfile` from a `User`
+The reverse relationship from the `User` model to the `UserProfile` model will automatically be created by Django, using the lowercase name of the related model i.e. `userprofile` in this case by default.
+
+```python
 user_instance = User.objects.get(username="some_username")
-
-# Access the related UserProfile instance via the reverse relationship
 user_profile = user_instance.userprofile
+```
 
+## Reverse relationship with `related_name` property 
+With related_name, we can specify the `related_name` parameter in the OneToOneField, by which we can make reverse relationship.
+
+```python
+# In the UserProfile model,
+user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+
+# access `UserProfile` from a `User` instance
+user_profile = user_instance.profile
 ```
 
 
-
+<br>
 
 
 # Many-to-One Relationship
@@ -67,6 +87,39 @@ class Order(models.Model):
         return f"Order {self.id} by {self.customer.username}"
 
 ```
+## Accessing a `Customer` from an `Order`
+Given an `Order` instance, we can access the associated `Customer` using the `customer` attribute.
+
+```python
+order = Order.objects.get(id=1)
+customer = order.customer
+```
+
+## Accessing `Orders` from a `Customer`
+We can access the orders of a specific customer using the `order_set` attribute (default reverse relationship) or a custom related_name (if specified).
+
+```python
+# Retrieve a Customer instance
+customer = Customer.objects.get(username="john_doe")
+
+# Access all orders for this customer
+orders = customer.order_set.all()  # Default reverse relationship
+```
+
+## Reverse relationship with `related_name` property 
+With related_name, we can specify the `related_name` parameter in the `ForeignKey`, by which we can make reverse relationship.
+
+```python
+# In the UserProfile model,
+customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="orders")
+
+# Access all orders using the custom related_name
+customer = Customer.objects.get(username="john_doe")
+orders = customer.orders.all()  # 'orders' is the related_name
+```
+
+
+<br>
 
 
 # Many-to-Many Relationship
@@ -98,13 +151,14 @@ class Student(models.Model):
 - The `ManyToManyField` creates a many-to-many relationship between `Student` and `Course`. 
 - Each `Student` can enroll in multiple `Course` instances, and each `Course` can have many `Student` instances.
 - Django automatically creates an intermediary table to store the relationships.
+- There is no strict convention that a `ManyToManyField` must only be defined in a specific class. We define the it in either of the related classes, depending on the context and the design of our application. 
 
 
 
 
 
-# How ManyToManyField works?
-When we use a ManyToManyField, Django automatically creates an intermediary table to manage the `many-to-many` relationship. This table is used behind the scenes to link the two models involved in the `many-to-many` relationship. When we define a `ManyToManyField`, Django automatically creates a `join table` to store the relationship between the two models. This join table typically has two foreign keys—one pointing to each of the models involved in the `many-to-many` relationship. Django will create an automatic table, usually named `<appname>_<modelname>_<modelname>`.
+## How `ManyToManyField` works?
+When we use a `ManyToManyField`, Django automatically creates an intermediary table to manage the `many-to-many` relationship. This table is used behind the scenes to link the two models involved in the `many-to-many` relationship. When we define a `ManyToManyField`, Django automatically creates a `join table` to store the relationship between the two models. This join table typically has two foreign keys—one pointing to each of the models involved in the `many-to-many` relationship. Django will create an automatic table, usually named `<appname>_<modelname>_<modelname>`.
 
 ### Example
 
@@ -139,7 +193,12 @@ products_in_order = order.products.all()  # Access all related products
 # Access all orders for a specific product
 product = Product.objects.get(id=1)
 orders_for_product = product.orders.all()  # Access all related orders
+orders_for_product = product.order_set.all()  # Access all related orders if the `related_name` property missing
 ```
+
+
+<br>
+
 
 # Use of `through` attribute
 There are some scenarios where we need to store additional information about the relationship between two models. This is where the `through` attribute comes into play.
@@ -174,39 +233,3 @@ class OrderItem(models.Model):
 
 ```
 Here, `OrderItem` is the `custom through model` that allows us to store additional data (quantity) about the relationship between Order and Product. The `ManyToManyField` in Order uses `through='OrderItem'` to specify that the relationship between `Order` and `Product` should be managed through the `OrderItem` model, which contains the quantity of each product in the order. In this case, the automatic join table is replaced by the custom `OrderItem` table, which can store more detailed information.
-
-
-# How to Populate Dummy Data for Django Models using Custom Management Command?
-- Create a custom management command inside our app, create a `management/commands` directory.
-- Create a new Python file for our command, e.g., `populate_dummy_data.py`.
-```python
-# myapp/management/commands/populate_dummy_data.py
-from django.core.management.base import BaseCommand
-from myapp.models import User, Product, Order, OrderItem
-
-class Command(BaseCommand):
-    help = 'Populate the database with dummy data'
-
-    def handle(self, *args, **kwargs):
-        # Create Users
-        user = User.objects.create_user(username="john_doe", password="password123", email="john@example.com")
-        
-        # Create Products
-        product1 = Product.objects.create(name="Product 1", description="Description for Product 1", price=100.0, stock=10)
-        product2 = Product.objects.create(name="Product 2", description="Description for Product 2", price=50.0, stock=20)
-        product3 = Product.objects.create(name="Product 3", description="Description for Product 3", price=30.0, stock=5)
-        
-        # Create an Order
-        order = Order.objects.create(user=user, status=Order.StatusChoices.PENDING)
-        
-        # Create OrderItems
-        OrderItem.objects.create(order=order, product=product1, quantity=2)
-        OrderItem.objects.create(order=order, product=product2, quantity=1)
-        
-        self.stdout.write(self.style.SUCCESS('Successfully populated the database with dummy data'))
-
-```
-- After creating the custom command, run the command using:
-```bash
-python manage.py populate_dummy_data
-```
