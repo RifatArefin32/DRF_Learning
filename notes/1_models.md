@@ -8,7 +8,7 @@ In Django, models can be related to one another in several ways, depending on th
 In a one-to-one relationship, each instance of a model is related to exactly one instance of another model. This type of relationship is less common but useful when we want to ensure that one record is associated with a unique record in another model.
 
 ### Example
-Suppose each `User` of a website has his unique `User Profile`. So we would model this as a **one-to-one relationship**.
+Suppose each `User` of a website has his unique `User Profile` i.e. Each `UserProfile` belongs to a `User`. So we would model this as a **one-to-one relationship**.
 
 ```python
 class UserProfile(models.Model):
@@ -20,6 +20,21 @@ class UserProfile(models.Model):
         return f"Profile of {self.user.username}"
 
 ```
+Here, in our `UserProfile` model, we've created a `OneToOneField` that links the `UserProfile` model to the `User` model using the `user` field. The reverse relationship from the `User` model to the `UserProfile` model will automatically be created by Django, using the lowercase name of the related model i.e. `userprofile` in this case by default.
+
+### Example
+```python
+# Get a User instance
+user_instance = User.objects.get(username="some_username")
+
+# Access the related UserProfile instance via the reverse relationship
+user_profile = user_instance.userprofile
+
+```
+
+
+
+
 
 # Many-to-One Relationship
 In a many-to-one relationship, multiple instances of one model can be related to a single instance of another model. This is one of the most common relationships and is represented using the `ForeignKey` field in Django.
@@ -53,6 +68,7 @@ class Order(models.Model):
 
 ```
 
+
 # Many-to-Many Relationship
 A many-to-many relationship allows multiple instances of one model to be related to multiple instances of another model. This is represented using the `ManyToManyField `in Django, and Django automatically creates a join table to handle this relationship.
 
@@ -84,47 +100,6 @@ class Student(models.Model):
 - Django automatically creates an intermediary table to store the relationships.
 
 
-# `related_name` Attribute
-The `related_name` attribute in Django is used to define the name of the reverse relation from the related model back to the model that contains the `OneToOneField`, `ForeignKey` or `ManyToManyField` field. It allows us to specify how to access the related objects from the other side of the relationship.
-
-
-## Without related_name
-Django uses the default reverse relation name, which is `<model_name>_set` in lowercase.
-
-```python
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-
-class Book(models.Model):
-    title = models.CharField(max_length=200)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-
-
-author = Author.objects.get(id=1)
-books_by_author = author.book_set.all()  # all books related to this author
-```
-In this case, Django will automatically create a reverse relation named `book_set`. This means that if we have an `Author` instance, we can access all of the related `Book` instances using `author.book_set.all()`.
-
-
-
-
-## With related_name
-If we want to give the reverse relation a more meaningful name, we can specify the `related_name` attribute.
-
-```python
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-
-class Book(models.Model):
-    title = models.CharField(max_length=200)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
-
-
-author = Author.objects.get(id=1)
-books_by_author = author.books.all()  # all books related to this author
-
-```
-Now, we can access all books related to an Author instance using `author.books.all()` instead of the default `book_set`.
 
 
 
