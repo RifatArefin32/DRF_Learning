@@ -6,6 +6,8 @@ In Django, models can be related to one another in several ways, depending on th
 
 
 <br>
+<br>
+<br>
 
 
 # One-to-One Relationship
@@ -53,6 +55,8 @@ user_profile = user_instance.profile
 ```
 
 
+<br>
+<br>
 <br>
 
 
@@ -120,6 +124,8 @@ orders = customer.orders.all()  # 'orders' is the related_name
 
 
 <br>
+<br>
+<br>
 
 
 # Many-to-Many Relationship
@@ -153,10 +159,6 @@ class Student(models.Model):
 - Django automatically creates an intermediary table to store the relationships.
 - There is no strict convention that a `ManyToManyField` must only be defined in a specific class. We define the it in either of the related classes, depending on the context and the design of our application. 
 
-
-
-
-
 ## How `ManyToManyField` works?
 When we use a `ManyToManyField`, Django automatically creates an intermediary table to manage the `many-to-many` relationship. This table is used behind the scenes to link the two models involved in the `many-to-many` relationship. When we define a `ManyToManyField`, Django automatically creates a `join table` to store the relationship between the two models. This join table typically has two foreign keys—one pointing to each of the models involved in the `many-to-many` relationship. Django will create an automatic table, usually named `<appname>_<modelname>_<modelname>`.
 
@@ -181,9 +183,7 @@ Here, Django will automatically create a join table in the database to manage th
 - One foreign key pointing to the `Order` model.
 - One foreign key pointing to the `Product` model.
 This join table will contain records that represent which products are part of which orders.
-
  
-
 ## How to Access the Many-to-Many Relationship
 ```python
 # Access all products in a specific order
@@ -196,11 +196,7 @@ orders_for_product = product.orders.all()  # Access all related orders
 orders_for_product = product.order_set.all()  # Access all related orders if the `related_name` property missing
 ```
 
-
-<br>
-
-
-# Use of `through` attribute
+## Use of `through` attribute
 There are some scenarios where we need to store additional information about the relationship between two models. This is where the `through` attribute comes into play.
 
 ### Example
