@@ -87,3 +87,60 @@ urlpatterns = [
 ]
 
 ```
+
+# Example Scenario with some attributes
+- lookup_field
+- lookup_url_kwarg
+- pagination_class 
+- filter_backends
+
+## lookup_field and lookup_url_kwarg
+Use these attributes for custom lookups when working with detail views.
+```python
+from rest_framework.generics import RetrieveAPIView
+
+class BookDetailView(RetrieveAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    lookup_field = 'isbn'  # Use 'isbn' field for lookup
+    lookup_url_kwarg = 'book_isbn'  # URL keyword for lookup
+
+# URL Configuration
+from django.urls import path
+from .views import BookDetailView
+
+urlpatterns = [
+    path('books/<book_isbn>/', BookDetailView.as_view(), name='book-detail'),
+]
+
+```
+- This view will look up `books` by their isbn field when the URL contains `<book_isbn>`. 
+- For example, Request to `/books/1234567890123/` will retrieve the book with `isbn="1234567890123"`.
+
+
+# pagination_class
+Add pagination to list views.
+
+### Pagination Class
+First, create a custom pagination class (optional).
+```python
+from rest_framework.pagination import PageNumberPagination
+
+class CustomPagination(PageNumberPagination):
+    page_size = 5  # Number of items per page
+    page_size_query_param = 'page_size'  # Allow the client to control page size
+    max_page_size = 10  # Maximum page size limit
+
+```
+### View with Pagination
+Apply the pagination to your view.
+```python
+from rest_framework.generics import ListAPIView
+
+class PaginatedBookListView(ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    pagination_class = CustomPagination
+
+```
+- A `GET` request to `/books/` will return paginated results with `5` books per page. Clients can control page size by passing `?page_size=3`.
