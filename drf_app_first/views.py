@@ -88,7 +88,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 
 
 # Class-based view to show a product details 
-class ProductDetailAPIView(generics.RetrieveAPIView):
+class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 

@@ -1,10 +1,17 @@
 # Get all products
 GET http://localhost:8000/first/products/ HTTP/1.1
-
-
 ###
+GET http://localhost:8000/first/products/1/ HTTP/1.1
+###
+PATCH  http://localhost:8000/first/products/1/ HTTP/1.1
+Content-Type: application/json
 
-
+{
+    "name": "Product 1"
+}
+###
+DELETE   http://localhost:8000/first/products/1/ HTTP/1.1
+###
 # Create a new product
 POST http://localhost:8000/first/products/ HTTP/1.1
 Content-Type: application/json
