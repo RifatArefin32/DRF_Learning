@@ -1,11 +1,14 @@
 # Get all products
 GET http://localhost:8000/first/products/ HTTP/1.1
 
+
 ###
 
-# 
+
+# Create a new product
 POST http://localhost:8000/first/products/ HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MDY4MzQyLCJpYXQiOjE3MzgwNjgwNDIsImp0aSI6Ijc4ODk3YjA0M2FiYTQ1YTZhMTBhNjhhMmY0YTBmMjRiIiwidXNlcl9pZCI6M30.XViJoA3nmzVXw_HtmoazlAGADlLnLjx9Xn8IgT8jvBY
 
 {
     "name": "Television",
@@ -13,3 +16,29 @@ Content-Type: application/json
     "stock": 14,
     "description": "This is test description for television"
 }
+
+
+###
+
+
+# Create an access and refresh token
+POST http://localhost:8000/api/token/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+
+###
+
+
+# Create an access and refresh token
+POST http://localhost:8000/api/token/refresh/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczODE1NTQyNCwiaWF0IjoxNzM4MDY5MDI0LCJqdGkiOiJkOWU1MDJjNjkyYTM0YTQ2YjdjZmVjZjE4MmM4MzhhOSIsInVzZXJfaWQiOjN9.dBAV_XbQYDhlQTCQHG9V_-JUb3wDTdfedvHMCY5SVBs"
+}
+
