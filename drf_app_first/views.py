@@ -2,13 +2,14 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Max
 from rest_framework import generics
+from rest_framework import filters
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Product, Order
 from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
-from .filters import ProductFilter, ProductFilter2
+from .filters import ProductFilter, ProductFilter2, InStockFilterBackend
 
 
 # Create your views here.
@@ -82,7 +83,10 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     # filterset_fields = ['name', 'price']
     # filterset_class = ProductFilter
     filterset_class = ProductFilter2
-
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, InStockFilterBackend]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'price', 'stock']
+    
     def get_permissions(self):
         self.permission_classes = [AllowAny]
         if self.request.method == 'POST':

@@ -2,6 +2,8 @@
 # GET http://localhost:8000/first/products/?price__gt=2400 HTTP/1.1
 GET http://localhost:8000/first/products/?price__range=10, 100 HTTP/1.1
 ###
+GET http://localhost:8000/first/products?search=product&ordering=-price HTTP/1.1
+###
 GET http://localhost:8000/first/products/info/ HTTP/1.1
 ###
 GET http://localhost:8000/first/products/1/ HTTP/1.1
