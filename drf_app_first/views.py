@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Product, Order
 from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
+from .filters import ProductFilter, ProductFilter2
 
 
 # Create your views here.
@@ -78,6 +79,9 @@ class ProductCreateAPIView(generics.CreateAPIView):
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    # filterset_fields = ['name', 'price']
+    # filterset_class = ProductFilter
+    filterset_class = ProductFilter2
 
     def get_permissions(self):
         self.permission_classes = [AllowAny]

@@ -1,6 +1,7 @@
 asgiref==3.8.1
 autopep8==2.3.2
 Django==5.1.5
+django-filter==24.3
 django-silk==5.3.2
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
