@@ -1,17 +1,21 @@
+from django.db.models import Max
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.db.models import Max
-from rest_framework import generics
-from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics
+from rest_framework.decorators import action
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
-from .models import Product, Order
-from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
-from .filters import ProductFilter, ProductFilter2, InStockFilterBackend
+from rest_framework.viewsets import ModelViewSet
 
+from .filters import (InStockFilterBackend, OrderFilter, ProductFilter,
+                      ProductFilter2)
+from .models import Order, Product
+from .serializers import (OrderSerializer, PorductInfoSerializer,
+                          ProductSerializer)
 
 # Create your views here.
 
@@ -139,4 +143,20 @@ class ProductInfoAPIView(APIView):
             'max_price': max_price
         })
 
+        return Response(serializer.data)
+
+
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.prefetch_related('items', 'product').all()
+    serializer_class = OrderSerializer
+    permission_classes=[IsAuthenticated]
+    filterset_class = OrderFilter
+    filter_backends = [DjangoFilterBackend]
+    pagination_class = None
+
+    @action(detail=False, methods=['get'], url_path='user-orders')
+    def user_orders(self, request):
+        orders = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer(orders, many=True)
         return Response(serializer.data)

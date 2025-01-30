@@ -57,3 +57,10 @@ Content-Type: application/json
     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczODE1NTQyNCwiaWF0IjoxNzM4MDY5MDI0LCJqdGkiOiJkOWU1MDJjNjkyYTM0YTQ2YjdjZmVjZjE4MmM4MzhhOSIsInVzZXJfaWQiOjN9.dBAV_XbQYDhlQTCQHG9V_-JUb3wDTdfedvHMCY5SVBs"
 }
 
+### 
+# Orders
+GET http://localhost:8000/first/orders/?status=Confirmed
+### 
+GET http://localhost:8000/first/orders/user-orders/
+### 
+GET http://localhost:8000/first/orders/266adc62-c15b-4e93-9e72-9b42904e49f2/
