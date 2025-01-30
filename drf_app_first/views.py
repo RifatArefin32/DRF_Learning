@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from .models import Product, Order
 from .serializers import PorductInfoSerializer, ProductSerializer, OrderSerializer
 from .filters import ProductFilter, ProductFilter2, InStockFilterBackend
@@ -78,7 +79,8 @@ class ProductCreateAPIView(generics.CreateAPIView):
 
 # Create and list all products
 class ProductListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
+    queryset = Product.objects.order_by('pk')
     serializer_class = ProductSerializer
     # filterset_fields = ['name', 'price']
     # filterset_class = ProductFilter
@@ -86,6 +88,10 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, InStockFilterBackend]
     search_fields = ['name', 'description']
     ordering_fields = ['name', 'price', 'stock']
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 2
+    pagination_class.page_query_param = 'pgnum'
+    pagination_class .page_size_query_param = 'pgsize'
     
     def get_permissions(self):
         self.permission_classes = [AllowAny]
